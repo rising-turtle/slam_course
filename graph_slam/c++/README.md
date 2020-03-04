@@ -13,7 +13,7 @@
    Or you can compile and run both of them if you like. 
 
 4. make the project following:  
-    mkdir build 
+    mkdir build     
     cd build  
     cmake ..  
     make  
