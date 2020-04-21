@@ -1,7 +1,8 @@
 1. Download and install g2o or gtsam, follow their instuctions 
 
-    g2o: https://github.com/RainerKuemmerle/g2o
+    g2o: https://github.com/RainerKuemmerle/g2o     
     gtsam: https://bitbucket.org/gtborg/gtsam.git
+      &  https://borg.cc.gatech.edu/download.html
 
 2. Change the directories of g2o/gtsam in the CMakeLists.txt  
     change the lines:   
