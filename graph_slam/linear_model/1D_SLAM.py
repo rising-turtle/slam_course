@@ -324,24 +324,27 @@ which should return a mu of:
  [13.0]]
 """
 def doit(initial_pos, move1, move2, Z0, Z1, Z2):
-    Omega = matrix([[1.0, 0.0, 0.0],
+    ## Add prior u0 
+    A = matrix([[1.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0]])
-    Xi = matrix([[initial_pos],
+    b = matrix([[initial_pos],
                  [0.0],
                  [0.0]])
-
-    Omega += matrix([[1.0, -1.0, 0.0],
+    
+    ## Add odometry u01 
+    A += matrix([[1.0, -1.0, 0.0],
                      [-1.0, 1.0, 0.0],
                      [0.0, 0.0, 0.0]])
-    Xi += matrix([[-move1],
+    b += matrix([[-move1],
                   [move1],
                   [0.0]])
     
-    Omega += matrix([[0.0, 0.0, 0.0],
+    ## Add odometry u12 
+    A += matrix([[0.0, 0.0, 0.0],
                      [0.0, 1.0, -1.0],
                      [0.0, -1.0, 1.0]])
-    Xi += matrix([[0.0],
+    b += matrix([[0.0],
                   [-move2],
                   [move2]])
 
@@ -350,38 +353,53 @@ def doit(initial_pos, move1, move2, Z0, Z1, Z2):
     # Add your code here.
     #
     #
-    Omega = Omega.expand(4, 4, [0, 1, 2], [0, 1, 2])
-    Xi = Xi.expand(4, 1, [0, 1, 2], [0])
+    # expand to include landmarks 
+    A = A.expand(4, 4, [0, 1, 2], [0, 1, 2])
+    b = b.expand(4, 1, [0, 1, 2], [0])
 
 
     ## Add landmark m00 
-    Omega += matrix([[1., 0., 0., -1.],
+    A += matrix([[1., 0., 0., -1.],
                     [0., 0., 0., 0.],
                     [0., 0., 0., 0.], 
                     [-1., 0., 0., 1.]])
-    Xi += matrix([[-Z0], [0.], [0.], [Z0]])
+    b += matrix([[-Z0], [0.], [0.], [Z0]])
     
     ## Add landmark m01
-    Omega += matrix([[0., 0., 0., 0.],
+    A += matrix([[0., 0., 0., 0.],
                     [0., 1., 0., -1.],
                     [0., 0., 0., 0.], 
                     [0., -1., 0., 1.]])
-    Xi += matrix([[0.], [-Z1], [0.], [Z1]])
+    b += matrix([[0.], [-Z1], [0.], [Z1]])
     
     ## Add landmark m02
-    w = 1/1.
-    Omega += matrix([[0., 0., 0., 0.],
+    sigma = 0.1
+    w = 1./sigma
+    A += matrix([[0., 0., 0., 0.],
                     [0., 0., 0., 0.],
                     [0., 0., 1.*w, -1.*w], 
                     [0., 0., -1.*w, 1.*w]])
-    Xi += matrix([[0.], [0.], [-Z2*w], [Z2*w]])
+    b += matrix([[0.], [0.], [-Z2*w], [Z2*w]])
     
-    Omega.show('Omega: ')
-    Xi.show('Xi:    ')
-    mu = Omega.inverse() * Xi
+    # solve it mu = A-1*b 
+    mu = A.inverse() * b
+    
+    A.show('A: ')
+    b.show('b:    ')
     mu.show('Mu:    ')
     
     return mu
 
+# def doit(initial_pos, move1, move2, Z0, Z1, Z2)
 doit(-2, 10, -3, 15, 5, 8)
 # doit(-2, 10, -3, 15, 5, 6)
+
+
+
+
+
+
+
+
+
+
